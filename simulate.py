@@ -24,6 +24,7 @@ def singleSim(
 		]
 	) / reruns
 
+# The main data collection function
 def simulate(
 	allGames : list, games : list,
 	samples : int, reruns : int,
@@ -31,6 +32,7 @@ def simulate(
 	betas : np.array = np.linspace(0.25, 0.75, 11),
 	debugPrint : bool = False
 ):
+	# List of non-suppressed column lists
 	nonAnonTuples = [
 		["Genre"],
 		["Genre"],
@@ -52,6 +54,7 @@ def simulate(
 		["Genre", "Developer(s)", "Release Year", "Platform"],
 		["Genre", "Developer(s)", "Release Year", "Platform"]
 	]
+	# Whether to generalize generalizable columns in one of the above lists
 	generalizeFlags = [
 		False,
 		True,
@@ -74,18 +77,21 @@ def simulate(
 		True,
 	]
 
+	# Used for logging
 	groupName = lambda l, g : ("Gener. " if g else '') + ''.join([s[:2] for s in l])
 	groupNameVerbose = lambda l, g : ', '.join(l) + (" (Genericized)" if g else '')
+	# Record-keeping for plotted information
 	allAccuracies = np.zeros((betas.shape[0], len(nonAnonTuples) + 1), np.float64)
 	allAppraisals = np.zeros((betas.shape[0], len(nonAnonTuples)), np.float64)
 	allK = np.zeros((betas.shape[0], len(nonAnonTuples)), np.int16)
-	
+
+	# Run across all sampling rates
 	for beta in betas:
 		print("Beta:", format(beta, " ^6.2f"))
 		accuracyAccumulator = np.zeros(len(nonAnonTuples) + 1, np.float64)
 		appraisalAccumulator = np.zeros(len(nonAnonTuples), np.float64)
 		kAccumulator = np.zeros(len(nonAnonTuples), np.int16)
-
+		# Run across all samples
 		for s in range(samples):
 			print("\tSample", s)
 			sample = sampling.betaSample(games, beta)
@@ -96,7 +102,7 @@ def simulate(
 				format("Appraiser", " ^12s") + \
 				format("k-Level", " ^8s")
 			)
-
+			# Get a baseline for the Scammer always random guessing
 			accu = singleSim(
 				allGames, games, sample, nonAnonTuples[0], reruns, True, debugPrint
 			)
@@ -104,7 +110,7 @@ def simulate(
 			print(
 				"\t\t" + format("Control:", " >16s"), format(accu, " ^8.4f")
 			)
-
+			# Actually get to the lists of non-suppressed columns
 			for l in range(len(nonAnonTuples)):
 				accu = singleSim(
 					allGames, games, sample, nonAnonTuples[l], reruns,
@@ -131,11 +137,11 @@ def simulate(
 					flush = True
 				)
 			print()
-
+		# Average the results
 		accuracyAccumulator /= samples
 		appraisalAccumulator /= samples
 		kAccumulator = kAccumulator // samples
-
+		# Slot in the results to the 2D logging array
 		allAccuracies[betas.tolist().index(beta)] = accuracyAccumulator
 		allAppraisals[betas.tolist().index(beta)] = appraisalAccumulator
 		allK[betas.tolist().index(beta)] = kAccumulator
@@ -147,6 +153,7 @@ def simulate(
 			format("Appraiser", " ^12s") + \
 			format("k-Level", " ^8s")
 		)
+		# Pretty printing for logging
 		for i in range(len(nonAnonTuples) + 1):
 			print(
 				"\t" + format(
@@ -164,8 +171,8 @@ def simulate(
 			)
 
 		print(20 * '-')
-		print(flush = True)
-
+		print(flush = True) # Helps with the tee command
+	# Plotting data writeout
 	betasFilename = resultsBasename + "_betas.dat"
 	accuFilename = resultsBasename + "_accuracies.dat"
 	apprFilename = resultsBasename + "_appraisals.dat"
@@ -204,6 +211,7 @@ def simulate(
 	print()
 	print(allK)
 
+# Command line processing
 if __name__ == "__main__":
 	try:
 		if len(sys.argv) < 4:

@@ -1,5 +1,5 @@
 import csv
-
+# Used to combine the NES and SNES games into one big list
 def loadFiles(
 	filenames : list, consoles: list,
 	sortKeys : list = ["Developer(s)", "Release Year"],
@@ -42,6 +42,8 @@ def loadFiles(
 
 	return games
 
+# Write out the file once processing is finished;
+# Use semicolon as the delimiter since some fields will use commas in their string
 def writeNewFile(games : list, filename : str):
 	csv.register_dialect("semi", delimiter = ';')
 	dia = csv.get_dialect("semi")
@@ -56,6 +58,7 @@ def writeNewFile(games : list, filename : str):
 	file.close()
 	print("Wrote games to", filename)
 
+# Useful for printing a whole table of games
 def gameToString(game : dict, titleLen : int = 64, devLen : int = 36) -> str:
 	s = "[ '" + game["Release Year"][-2:] + ", "
 	s += format(game["Platform"], " ^6s") + "] "
@@ -68,13 +71,16 @@ def gameToString(game : dict, titleLen : int = 64, devLen : int = 36) -> str:
 
 	return s
 
+# Runs the above function across a whole list
 def printGames(games : list):
 	for g in games:
 		print(gameToString(g))
 
+# Perform a grep-like operation on a single column to look for certain games
 def filterGames(games : list, key : str, subString : str) -> list:
 	return [g for g in games if subString in g[key]]
 
+# Ease-of-use function for adding the genre column
 def addGenres(
 	games : list, genres : list = [
 		"Platformer",
@@ -110,6 +116,7 @@ def addGenres(
 	
 	return genredGames
 
+# Ease-of-use for adding the price column
 def addPrices(games : list):
 	pricedGames = []
 	for g in games:

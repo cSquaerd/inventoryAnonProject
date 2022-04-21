@@ -1,6 +1,6 @@
 from lxml import etree
 import sys
-
+# Read in an HTML file with just a <table> element and use etree to parse it
 def parseTable(filename : str) -> etree.Element:
 	try:
 		docFile = open(filename, 'r')
@@ -11,6 +11,8 @@ def parseTable(filename : str) -> etree.Element:
 		print(e)
 		return None
 
+# Extract various columns from the parsed table by number (contained in cols arg)
+# For this experiment, the needed columns are the same on the NES and SNES tables
 def toCSV_selectiveCols(table : etree.Element, cols : list):
 	result = "Title;Developer(s);Publisher(s);Release Year\n"
 
@@ -30,6 +32,7 @@ def toCSV_selectiveCols(table : etree.Element, cols : list):
 
 	return result
 
+# Command line handling
 if __name__ == "__main__":
 	if len(sys.argv) == 3:
 		inFilename = sys.argv[1]
