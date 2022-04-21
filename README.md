@@ -2,6 +2,7 @@
 ## A Trustworthy Machine Learning Project
 ### Created by Charles Cook
 ### Supervised by Dr. Alex Gittens \& Dr. Ali Tajer
+### For CSCI 6962: Trustworthy Machine Learning, Rensselaer Polytechnic University
 
 See proposal PDF for details, as well as `sampling.py` and `simulate.py`.
 
